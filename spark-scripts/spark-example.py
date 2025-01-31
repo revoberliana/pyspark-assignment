@@ -1,5 +1,10 @@
 import pyspark
 
+postgres_host       = "dataeng-postgres"
+postgres_dw_db      = "warehouse"
+postgres_user       = "user"
+postgres_password   = "password"
+
 sparkcontext = pyspark.SparkContext.getOrCreate(
     conf=(pyspark.SparkConf().setAppName("Dibimbing"))
 )
@@ -66,3 +71,16 @@ merged_df = purchases_df.join(customers_df, "customer_id").join(
     products_df, "product_id"
 )
 merged_df.show()
+
+jdbc_url = f"jdbc:postgresql::/{postgres_host}/{postgres_dw_db}"
+jdbc_properties = {
+    "user" : postgres_user,
+    "password" : postgres_password,
+    "driver" : "org.postgresql.Driver",
+    "stringtype" : "unspecified",
+}
+
+print(jdbc_properties)
+retail_df = spark.read.jdbc(jdbc_url, "public.retail", properties=jdbc_properties)
+
+retail_df.show(5)
