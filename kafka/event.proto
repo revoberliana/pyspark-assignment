@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message Event {
+  int32 user_id = 1;
+  float amount = 2;
+  int64 timestamp = 3;
+}
