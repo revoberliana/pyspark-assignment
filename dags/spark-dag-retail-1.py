@@ -1,27 +1,42 @@
-from datetime import timedelta
 from airflow import DAG
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
-from airflow.utils.dates import days_ago
+from datetime import datetime
 
+# Default arguments for the DAG
 default_args = {
-    "owner": "dibimbing",
-    "retry_delay": timedelta(minutes=5),
+    "owner": "airflow",
+    "start_date": datetime(2024, 1, 1),
+    "retries": 1,
 }
 
-spark_dag = DAG(
-    dag_id="spark_airflow_retail_1_dag",
+# Define the DAG
+dag = DAG(
+    dag_id="retail_analysis_dag_1",
     default_args=default_args,
-    schedule_interval=None,
-    dagrun_timeout=timedelta(minutes=60),
-    description="Test for spark submit",
-    start_date=days_ago(1),
+    description="DAG to run retail analysis using Spark",
+    schedule_interval="@daily",
+    catchup=False,
 )
 
-Extract = SparkSubmitOperator(
-    application="/spark-scripts/pyspark_job.py",
-    conn_id="spark_main",
-    task_id="spark_submit_task",
-    dag=spark_dag,
+# Define the SparkSubmitOperator task
+retail_analysis = SparkSubmitOperator(
+    task_id="retail_analysis",
+    application="/spark-scripts/pyspark-retail-1.py",
+    conn_id="spark_default",
+    conf={
+        "spark.jars": "/opt/bitnami/spark/jars/postgresql-42.2.18.jar",
+    },
+    application_args=[
+        "--postgres_host", "dataeng-postgres",
+        "--postgres_port", "5433",
+        "--postgres_db", "warehouse",
+        "--postgres_user", "user",
+        "--postgres_password", "*****",
+        "--output_path", "/output/retail_analysis.csv",
+        "--output_table", "retail_analysis_results",
+    ],
+    dag=dag,
 )
 
-Extract
+
+retail_analysis
