@@ -15,11 +15,13 @@ melakukan proses agregasi
 
 
 **Create DAG Script** 🎯
+
 Create DAG script in /dags/spark-dag-retail-1.py
 Script ini mendefinisikan DAG Airflow yang menjalankan script PySpark untuk analisis retail. Setiap hari (@daily), DAG ini akan mengeksekusi tugas yang menghubungkan ke cluster Spark dan menjalankan aplikasi yang terhubung ke database PostgreSQL untuk analisis lebih lanjut
 
 
 **Final Conclusion** 📊
+
 saat proses menjalankan airflow masih belum bisa kehubung ke driver , driver jar sudah kedownload di container, config sudah dimasukkan ke script , masih mencari error dimana 
 
 
